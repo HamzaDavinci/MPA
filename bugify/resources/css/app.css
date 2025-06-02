@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 @source "../views";
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -16,4 +19,31 @@
 
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgba(29, 185, 84, 0.8);
+    border-radius: 9999px;
+    box-shadow: 0 0 8px rgba(29, 185, 84, 0.6);
+    border: 1.5px solid transparent;
+    backdrop-filter: blur(5px);
+    transition: background-color 0.3s ease;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: rgba(29, 215, 114, 1);
+    box-shadow: 0 0 10px rgba(29, 215, 114, 0.9);
+}
+
+.scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(29, 185, 84, 0.8) transparent;
 }

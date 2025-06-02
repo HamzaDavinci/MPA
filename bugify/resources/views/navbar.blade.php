@@ -6,8 +6,17 @@
     </div>
     <ul class="font-bold flex gap-6 text-xl">
         <li><a href="/" class="text-spotify-green hover:text-white">Home</a></li>
-        <li><a href="browse" class="text-spotify-green hover:text-white">Browse</a></li>
-        <li><a href="playlists" class="text-spotify-green hover:text-white">Playlists</a></li>
-        <li><a href="login" class="text-spotify-green hover:text-white pr-10">Login</a></li>
+        <li><a href="/browse" class="text-spotify-green hover:text-white">Browse</a></li>
+        <li><a href="/playlists" class="text-spotify-green hover:text-white">Playlists</a></li>
+
+        @guest
+            <li><a href="{{ route('login') }}" class="text-spotify-green hover:text-white pr-10">Login</a></li>
+        @else
+            <li>
+                <a href="/dashboard" class="text-spotify-green hover:text-white pr-10">
+                    {{ Auth::user()->name }}
+                </a>
+            </li>
+        @endguest
     </ul>
 </nav>
