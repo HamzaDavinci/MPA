@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Genre;
+use App\Models\Browse;
 
 class HomeController extends Controller
 {
     public function index()
     {
 
-        $topGenres = Genre::whereIn('id', [1, 2, 3, 4])->get();
+        $topGenres = Browse::whereIn('id', [1, 2, 3, 4])->get();
 
         return view('home', compact('topGenres'));
     }

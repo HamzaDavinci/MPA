@@ -22,8 +22,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-7">
             @foreach($topGenres as $genre)
                 <div class="bg-background-surface rounded-2xl ml-2 mr-2 p-6 shadow hover:scale-105 transition-transform cursor-pointer">
-                    <h2 class="text-lg font-semibold">{{ $genre->name }}</h2>
-                    <p class="text-sm text-gray-500">{{ $genre->description }}</p>
+                    <a href="/browse">    
+                        <h2 class="text-lg font-semibold">{{ $genre->name }}</h2>
+                        <p class="text-sm text-gray-500">{{ $genre->description }}</p>
+                    </a>
                 </div>
             @endforeach
         </div>
