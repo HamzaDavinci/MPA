@@ -3,24 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Music;
+use App\Models\User;
 
 class Playlist extends Model
 {
-    protected $fillable = ['name', 'user_id', 'music', 'total_duration'];
+    protected $fillable = ['user_id', 'name'];
 
-    protected $casts = [
-        'music' => 'array', // JSON veld casten naar array
-    ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    // Voeg deze functie toe:
     public function music()
     {
-        // Assuming je pivot-tabel heet playlist_music en het model voor muziek heet Music
-        return $this->belongsToMany(Music::class, 'playlist_music', 'playlist_id', 'music_id');
+        return $this->belongsToMany(Music::class, 'playlist_music');
     }
+
 }

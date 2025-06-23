@@ -13,60 +13,43 @@ class PlaylistController extends Controller
     {
         $music = Music::with('genre')->get();
         $playlists = Auth::check()
-            ? Playlist::where('user_id', Auth::id())->get()
+            ? Playlist::with('music.genre')->where('user_id', Auth::id())->get()
             : collect();
 
         return view('playlists', compact('music', 'playlists'));
     }
 
     public function store(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect('/login')->withErrors('You must be logged in to create playlists.');
-        }
+{
+    $playlist = Playlist::create([
+        'user_id' => auth()->id(),
+        'name' => $request->name,
+    ]);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'music_ids' => 'array',
-            'music_ids.*' => 'integer|exists:music,id',
-        ]);
+    $playlist->music()->sync($request->music_ids);
 
-        // Verwijder alle apostrofs uit de naam
-        $cleanedName = str_replace("'", "ʼ", $validated['name']);  // gebruikt U+02BC
+    // update total_duration
+    $playlist->total_duration = $playlist->music()->sum('duration');
+    $playlist->save();
 
-        $playlist = Playlist::create([
-            'user_id' => Auth::id(),
-            'name' => $cleanedName,
-            'music' => $validated['music_ids'] ?? [],
-        ]);
+    return redirect()->route('playlists.index')->with('success', 'Playlist created!');
+}
 
-        return redirect()->route('playlists.index')->with('success', 'Playlist created!');
-    }
+public function update(Request $request, Playlist $playlist)
+{
+    $playlist->update([
+        'name' => $request->name,
+    ]);
 
+    $playlist->music()->sync($request->music_ids);
 
+    // update total_duration
+    $playlist->total_duration = $playlist->music()->sum('duration');
+    $playlist->save();
 
-    public function update(Request $request, Playlist $playlist)
-    {
-        if (!Auth::check() || Auth::id() !== $playlist->user_id) {
-            return redirect('/login')->withErrors('You are not authorized to edit this playlist.');
-        }
+    return redirect()->route('playlists.index')->with('success', 'Playlist edited!');
+}
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'music_ids' => 'array',
-            'music_ids.*' => 'integer|exists:music,id',
-        ]);
-
-        // Zorg dat ' vervangen wordt door de veilige variant
-        $safeName = str_replace("'", "ʼ", $validated['name']); // U+02BC
-
-        $playlist->update([
-            'name' => $safeName,
-            'music' => $validated['music_ids'] ?? [],
-        ]);
-
-        return redirect()->route('playlists.index')->with('success', 'Playlist updated!');
-    }
 
     public function destroy(Playlist $playlist)
     {
@@ -74,10 +57,10 @@ class PlaylistController extends Controller
             abort(403);
         }
 
+        $playlist->music()->detach();
+
         $playlist->delete();
 
         return redirect()->route('playlists.index')->with('success', 'Playlist deleted!');
     }
-    
-
 }

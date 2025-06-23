@@ -6,6 +6,7 @@ use App\Http\Controllers\BrowseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\MusicController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index']);
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/music/all', [PlaylistController::class, 'getAllMusic']);
 });
 
+Route::get('/music/{id}', [MusicController::class, 'detailpage'])->name('music.detailpage');
 
 Route::get('login', function () {
     return view('login');

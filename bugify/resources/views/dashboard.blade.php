@@ -35,7 +35,9 @@
                             <li class="bg-background-surface p-3 rounded-xl shadow hover:bg-background-surface/80 transition">
                                 <a href="/playlists" class="block">
                                     <p class="text-[#fafafa] font-semibold truncate">{{ $playlist->name }}</p>
-                                    <p class="text-gray-400 text-sm">Total duration: {{ gmdate('H:i:s', $playlist->totalDuration) }}</p>
+                                    <p class="text-gray-400 text-sm">
+                                        Total duration: {{ gmdate('H:i:s', $playlist->total_duration) }}
+                                    </p>
                                 </a>
                             </li>
                         @endforeach

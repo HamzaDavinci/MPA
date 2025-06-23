@@ -19,14 +19,14 @@
             </div>
         @endif
         @if ($errors->any())
-    <div class="mb-6 p-4 rounded bg-red-600 text-white">
-        <ul class="list-disc list-inside">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+            <div class="mb-6 p-4 rounded bg-red-600 text-white">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
 
         <form id="playlistForm" method="POST" action="{{ route('playlists.store') }}" class="mb-12 bg-background-surface p-6 rounded-xl shadow-lg">
@@ -69,7 +69,7 @@
                 <div class="space-y-4">
                     @foreach ($playlists as $playlist)
                         @php
-                            $playlistMusic = $music->whereIn('id', $playlist->music ?? []);
+                            $playlistMusic = $playlist->music;
                             $totalDuration = $playlistMusic->sum('duration');
                             $hours = floor($totalDuration / 3600);
                             $minutes = floor(($totalDuration % 3600) / 60);
@@ -77,7 +77,7 @@
 
                         <details class="bg-background-surface rounded-xl shadow p-4">
                             <summary class="cursor-pointer font-semibold text-xl truncate text-spotify-green select-none">
-                                {{ $playlist->name }} ({{ count($playlist->music ?? []) }} songs,
+                                {{ $playlist->name }} ({{ $playlistMusic->count() }} songs,
                                 total: {{ $hours }}u {{ str_pad($minutes, 2, '0', STR_PAD_LEFT) }}m)
                             </summary>
 
@@ -94,7 +94,7 @@
                             </ul>
 
                             <button
-                                onclick='editPlaylist({{ $playlist->id }}, {!! json_encode($playlist->name) !!}, {!! json_encode($playlist->music ?? []) !!})'
+                                onclick='editPlaylist({{ $playlist->id }}, {{ json_encode($playlist->name) }}, {{ json_encode($playlist->music->pluck("id")) }})'
                                 class="mt-4 bg-spotify-green hover:bg-spotify-green-dark text-background-main font-bold py-2 px-5 rounded-xl transition-all duration-200"
                             >
                                 Edit
@@ -114,6 +114,7 @@
                 </div>
             @endif
         </section>
+
 
         <div id="editFormWrapper" class="mt-12 hidden">
             <h2 class="text-3xl font-bold mb-4 text-spotify-green">Edit Playlist</h2>
@@ -192,21 +193,14 @@ function editPlaylist(id, name, selectedMusic) {
     // Zorg dat alle IDs numbers zijn
     selectedMusic = selectedMusic.map(id => parseInt(id));
 
-    console.log('Selected music IDs:', selectedMusic);
-
     checkboxes.forEach(cb => {
         const cbValue = parseInt(cb.value);
-        console.log('Checkbox value:', cb.value, 'Includes:', selectedMusic.includes(cbValue));
         cb.checked = selectedMusic.includes(cbValue);
     });
 
     window.scrollTo({ top: form.offsetTop - 50, behavior: 'smooth' });
 }
-
-
 </script>
-
-
 
 </body>
 </html>

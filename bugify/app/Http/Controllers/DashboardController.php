@@ -11,25 +11,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Haal genres op uit 'Browse' model (zoals jij gebruikt)
+        // Haal genres op met muziek
         $genres = Browse::with('music')->orderBy('id', 'asc')->get();
 
-        // Haal playlists op van ingelogde gebruiker
-        $playlists = Playlist::where('user_id', Auth::id())->get();
+        // Haal playlists op van ingelogde gebruiker, inclusief muziekrelatie
+        $playlists = Playlist::with('music')->where('user_id', Auth::id())->get();
 
-        // Bereken totale duur per playlist
-        foreach ($playlists as $playlist) {
-            $totalDuration = 0;
-            foreach ($playlist->music as $musicId) {
-                $music = \App\Models\Music::find($musicId);
-                if ($music) {
-                    $totalDuration += $music->duration; // in seconden
-                }
-            }
-            $playlist->totalDuration = $totalDuration;
-        }
+        // Je hoeft hier niks meer te rekenen, want total_duration staat al in de database
+        // Je kan gewoon in je blade view $playlist->total_duration gebruiken
 
-        // Geef genres én playlists door aan de view
         return view('dashboard', compact('genres', 'playlists'));
     }
+
 }

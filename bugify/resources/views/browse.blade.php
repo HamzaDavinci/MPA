@@ -59,7 +59,7 @@
             
             <div id="music-items" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-h-[600px] overflow-y-auto pr-2 scrollbar-custom">
                 @foreach($musics as $music)
-                    <div class="music-card bg-[#181818] rounded-2xl p-4 cursor-default flex items-center gap-4 transition duration-300 ease-in-out hover:bg-[#282828]">
+                    <a href="{{ route('music.detailpage', ['id' => $music->id]) }}" class="music-card bg-[#181818] rounded-2xl p-4 cursor-pointer flex items-center gap-4 transition duration-300 ease-in-out hover:bg-[#282828]">
                         <div class="w-14 h-14 bg-gradient-to-br from-spotify-green to-spotify-green rounded-lg flex items-center justify-center text-black font-bold text-lg select-none">
                             {{ strtoupper(substr($music->title, 0, 2)) }}
                         </div>
@@ -67,7 +67,7 @@
                             <h3 class="font-semibold text-white break-words" title="{{ $music->title }}">{{ $music->title }}</h3>
                             <p class="text-gray-400 text-sm break-words" title="{{ $music->genre->name }}">{{ $music->genre->name }}</p>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
 
@@ -77,60 +77,66 @@
     </main>
 
     <script>
-        const musics = @json($musics);
-        const musicListEl = document.getElementById('music-items');
-        const genreCards = document.querySelectorAll('.genre-card');
-        const selectedGenreName = document.getElementById('selected-genre-name');
-        const showAllBtn = document.getElementById('show-all');
+    // Laravel route met placeholder, wordt in JS vervangen door echte id
+    function musicDetailUrl(id) {
+        return @json(route('music.detailpage', ['id' => 'ID_PLACEHOLDER'])).replace('ID_PLACEHOLDER', id);
+    }
 
-        genreCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const genreId = parseInt(card.getAttribute('data-genre-id'));
-                const filteredMusic = musics.filter(m => m.genre_id === genreId);
+    const musics = @json($musics);
+    const musicListEl = document.getElementById('music-items');
+    const genreCards = document.querySelectorAll('.genre-card');
+    const selectedGenreName = document.getElementById('selected-genre-name');
+    const showAllBtn = document.getElementById('show-all');
 
-                selectedGenreName.textContent = card.querySelector('h2').textContent;
+    genreCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const genreId = parseInt(card.getAttribute('data-genre-id'));
+            const filteredMusic = musics.filter(m => m.genre_id === genreId);
 
-                musicListEl.innerHTML = '';
+            selectedGenreName.textContent = card.querySelector('h2').textContent;
 
-                if(filteredMusic.length === 0){
-                    musicListEl.innerHTML = '<div class="text-gray-400 col-span-full">No music found for this genre.</div>';
-                } else {
-                    filteredMusic.forEach(m => {
-                        musicListEl.innerHTML += `
-                        <div class="music-card bg-[#181818] rounded-2xl p-4 cursor-default flex items-center gap-4 transition duration-300 ease-in-out hover:bg-[#282828]">
-                            <div class="w-14 h-14 bg-gradient-to-br from-[#1db954] to-[#1ed760] rounded-lg flex items-center justify-center text-black font-bold text-lg select-none">
-                                ${m.title.substring(0,2).toUpperCase()}
-                            </div>
-                            <div class="flex flex-col">
-                                <h3 class="font-semibold text-white break-words" title="${m.title}">${m.title}</h3>
-                                <p class="text-gray-400 text-sm break-words" title="${m.genre.name}">${m.genre.name}</p>
-                            </div>
-                        </div>`;
-                    });
-                }
-            });
-        });
-
-        showAllBtn.addEventListener('click', () => {
-            selectedGenreName.textContent = 'All genres';
             musicListEl.innerHTML = '';
-            musics.forEach(m => {
-                musicListEl.innerHTML += `
-                <div class="music-card bg-[#181818] rounded-2xl p-4 cursor-default flex items-center gap-4 transition duration-300 ease-in-out hover:bg-[#282828]">
-                    <div class="w-14 h-14 bg-gradient-to-br from-[#1db954] to-[#1ed760] rounded-lg flex items-center justify-center text-black font-bold text-lg select-none">
-                        ${m.title.substring(0,2).toUpperCase()}
-                    </div>
-                    <div class="flex flex-col">
-                        <h3 class="font-semibold text-white break-words" title="${m.title}">${m.title}</h3>
-                        <p class="text-gray-400 text-sm break-words" title="${m.genre.name}">${m.genre.name}</p>
-                    </div>
-                </div>`;
-            });
 
-            showAllBtn.blur();
-            showAllBtn.classList.remove('focus:ring-2', 'focus:ring-offset-2', 'focus:ring-[#1db954]');
+            if(filteredMusic.length === 0){
+                musicListEl.innerHTML = '<div class="text-gray-400 col-span-full">No music found for this genre.</div>';
+            } else {
+                filteredMusic.forEach(m => {
+                    musicListEl.innerHTML += `
+                    <a href="${musicDetailUrl(m.id)}" class="music-card bg-[#181818] rounded-2xl p-4 cursor-pointer flex items-center gap-4 transition duration-300 ease-in-out hover:bg-[#282828]">
+                        <div class="w-14 h-14 bg-gradient-to-br from-[#1db954] to-[#1ed760] rounded-lg flex items-center justify-center text-black font-bold text-lg select-none">
+                            ${m.title.substring(0,2).toUpperCase()}
+                        </div>
+                        <div class="flex flex-col">
+                            <h3 class="font-semibold text-white break-words" title="${m.title}">${m.title}</h3>
+                            <p class="text-gray-400 text-sm break-words" title="${m.genre.name}">${m.genre.name}</p>
+                        </div>
+                    </a>`;
+                });
+            }
         });
-    </script>
+    });
+
+    showAllBtn.addEventListener('click', () => {
+        selectedGenreName.textContent = 'All genres';
+        musicListEl.innerHTML = '';
+        musics.forEach(m => {
+            musicListEl.innerHTML += `
+            <a href="${musicDetailUrl(m.id)}" class="music-card bg-[#181818] rounded-2xl p-4 cursor-pointer flex items-center gap-4 transition duration-300 ease-in-out hover:bg-[#282828]">
+                <div class="w-14 h-14 bg-gradient-to-br from-[#1db954] to-[#1ed760] rounded-lg flex items-center justify-center text-black font-bold text-lg select-none">
+                    ${m.title.substring(0,2).toUpperCase()}
+                </div>
+                <div class="flex flex-col">
+                    <h3 class="font-semibold text-white break-words" title="${m.title}">${m.title}</h3>
+                    <p class="text-gray-400 text-sm break-words" title="${m.genre.name}">${m.genre.name}</p>
+                </div>
+            </a>`;
+        });
+
+        showAllBtn.blur();
+        showAllBtn.classList.remove('focus:ring-2', 'focus:ring-offset-2', 'focus:ring-[#1db954]');
+    });
+</script>
+
 
     <!-- Footer -->
     @include('footer')

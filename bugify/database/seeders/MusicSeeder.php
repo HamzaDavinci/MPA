@@ -4,11 +4,14 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Faker\Factory as Faker;
 
 class MusicSeeder extends Seeder
 {
     public function run()
     {
+        $faker = Faker::create();
+
         $genreMusic = [
             'Broken Beats' => [
                 [
@@ -170,10 +173,19 @@ class MusicSeeder extends Seeder
 
             if ($genre) {
                 foreach ($musicList as $musicData) {
+                    // Genereer een nieuwe band voor elk liedje
+                    $bandId = DB::table('bands')->insertGetId([
+                        'name' => $faker->unique()->company,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
                     DB::table('music')->insert([
                         'title' => $musicData['title'],
                         'bio' => $musicData['bio'],
                         'duration' => $musicData['duration'],
+                        'release_date' => $faker->dateTimeBetween('-30 years', 'now')->format('Y-m-d'),
+                        'band_id' => $bandId,
                         'genre_id' => $genre->id,
                         'created_at' => now(),
                         'updated_at' => now(),
