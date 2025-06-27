@@ -7,16 +7,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\MusicController;
+use App\Http\Controllers\GuestPlaylistController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index']);
 
 // Andere pagina's
 Route::get('/browse', [BrowseController::class, 'index'])->name('browse.index');
-
-// Let op: deze moet BUITEN auth middleware zodat een net ingelogde user dit kan aanroepen
-Route::post('/import-guest-playlist', [PlaylistController::class, 'importGuestPlaylist'])->name('playlists.importGuest');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.index');
@@ -26,7 +23,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/music/all', [PlaylistController::class, 'getAllMusic']);
 });
 
+// Guest playlist routes (no auth middleware)
+Route::get('/guestplaylists', [GuestPlaylistController::class, 'index'])->name('guest.playlists.index');
+Route::post('/guestplaylists', [GuestPlaylistController::class, 'store'])->name('guest.playlists.store');
+Route::patch('/guestplaylists', [GuestPlaylistController::class, 'update'])->name('guest.playlists.update');
+Route::delete('/guestplaylists', [GuestPlaylistController::class, 'destroy'])->name('guest.playlists.destroy');
 Route::get('/music/{id}', [MusicController::class, 'detailpage'])->name('music.detailpage');
+
+Route::post('/playlists/import-guest', [PlaylistController::class, 'importGuest'])->name('playlists.importGuest');
+Route::post('/playlists/discard-guest', [PlaylistController::class, 'discardGuest'])->name('playlists.discardGuest');
+
+
+
+
 
 Route::get('login', function () {
     return view('login');

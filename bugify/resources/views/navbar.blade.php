@@ -16,10 +16,11 @@
         class="md:flex flex-col md:flex-row md:items-center md:gap-8 gap-4 absolute md:static top-full left-0 w-full md:w-auto bg-background-surface md:bg-transparent px-6 py-4 md:py-0 md:px-0 shadow md:shadow-none overflow-hidden max-h-0 opacity-0 md:max-h-full md:opacity-100 transition-[max-height,opacity] duration-300 ease-in-out text-xl font-bold z-40">
         <li><a href="/" class="text-spotify-green hover:text-white transition">Home</a></li>
         <li><a href="/browse" class="text-spotify-green hover:text-white transition">Browse</a></li>
-        <li><a href="/playlists" class="text-spotify-green hover:text-white transition">Playlists</a></li>
         @guest
+            <li><a href="/guestplaylists" class="text-spotify-green hover:text-white transition">Playlists</a></li>
             <li><a href="{{ route('login') }}" class="text-spotify-green hover:text-white transition mr-8">Login</a></li>
         @else
+            <li><a href="/playlists" class="text-spotify-green hover:text-white transition">Playlists</a></li>
             <li><a href="/dashboard" class="text-spotify-green hover:text-white transition mr-8">{{ Auth::user()->name }}</a></li>
         @endguest
     </ul>

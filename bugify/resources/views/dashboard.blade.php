@@ -21,6 +21,37 @@
         </p>
 
         <div class="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 text-left">
+@if($guestPlaylist)
+    <div id="guestPlaylistModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-background-surface rounded-xl shadow-lg p-8 max-w-md w-full relative">
+            <h2 class="text-2xl font-bold mb-4 text-spotify-green">Guest Playlist Found</h2>
+            <p>We found a playlist created while you were a guest named <strong>{{ $guestPlaylist['name'] }}</strong>. Would you like to import it?</p>
+            
+            <div class="mt-6 flex justify-end space-x-4">
+                <form method="POST" action="{{ route('playlists.importGuest') }}">
+                    @csrf
+                    <button type="submit" class="bg-spotify-green hover:bg-spotify-green-dark text-background-main font-bold py-2 px-4 rounded-xl transition-all duration-200">
+                        Import
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ route('playlists.discardGuest') }}">
+                    @csrf
+                    <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-xl transition-all duration-200">
+                        No, thanks
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('cancelImport').addEventListener('click', function() {
+            document.getElementById('guestPlaylistModal').style.display = 'none';
+        });
+    </script>
+@endif
 
             {{-- Playlists sectie --}}
             @if(isset($playlists))

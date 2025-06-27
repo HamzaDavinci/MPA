@@ -8,7 +8,7 @@ use App\Models\User;
 
 class Playlist extends Model
 {
-    protected $fillable = ['user_id', 'name'];
+    protected $fillable = ['user_id', 'name', 'total_duration'];
 
     public function music()
     {

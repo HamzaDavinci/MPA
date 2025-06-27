@@ -63,4 +63,42 @@ public function update(Request $request, Playlist $playlist)
 
         return redirect()->route('playlists.index')->with('success', 'Playlist deleted!');
     }
+
+    public function importGuest(Request $request)
+    {
+        $guestPlaylist = session('guest_playlist');
+
+        if (!$guestPlaylist) {
+            return redirect()->back()->with('error', 'No guest playlist found.');
+        }
+        
+        $totalDuration = array_sum(array_column($guestPlaylist['music'], 'duration'));
+
+        $playlist = Playlist::create([
+        'user_id' => Auth::id(),
+        'name' => $guestPlaylist['name'],
+        'total_duration' => $guestPlaylist['total_duration'] ?? 0,
+
+        
+    ]);
+
+        if (!empty($guestPlaylist['music'])) {
+            foreach ($guestPlaylist['music'] as $song) {
+                $playlist->music()->attach($song['id']);
+            }
+        }
+
+        session()->forget('guest_playlist');
+
+        return redirect()->route('dashboard')->with('success', 'Guest playlist imported successfully.');
+    }
+
+    public function discardGuest(Request $request)
+    {
+        session()->forget('guest_playlist');
+
+        return redirect()->route('dashboard')->with('info', 'Guest playlist discarded.');
+    }
+
+
 }
